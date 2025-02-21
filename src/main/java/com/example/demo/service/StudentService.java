@@ -7,12 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entities.Student;
+import com.example.demo.entities.Teacher;
 import com.example.demo.repos.StudentDao;
 
 @Service
 public class StudentService {
     @Autowired
     private StudentDao dao;
+    
+    @Autowired
+    private TeacherService teacherService;
     
     public Iterable<Student> getStudents() {
 		return dao.findAll();
@@ -70,4 +74,14 @@ public class StudentService {
     public Optional<Student> getTopperByStandard(int standard) {
         return dao.findTopperByStandard(standard);
     }
+    
+    public Optional<Teacher> getClassTeacher(int rollNo) {
+        Optional<Student> studentOpt = dao.findById(rollNo);
+        if (studentOpt.isPresent()) {
+            int standard = studentOpt.get().getStandard();
+            return teacherService.getTeacherById(standard);
+        }
+        return Optional.empty();
+    }
+
 }

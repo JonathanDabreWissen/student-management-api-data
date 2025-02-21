@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.entities.Student;
+import com.example.demo.entities.Teacher;
 import com.example.demo.service.StudentService;
 
 @RestController
@@ -75,5 +76,10 @@ public class StudentController {
     @GetMapping("/standard/{standard}/topper")
     public Optional<Student> getTopperByStandard(@PathVariable int standard) {
         return service.getTopperByStandard(standard);
+    }
+    
+    @GetMapping("/{rollNo}/class_teacher")
+    public Optional<Teacher> getClassTeacher(@PathVariable int rollNo) {
+        return service.getClassTeacher(rollNo);
     }
 }
