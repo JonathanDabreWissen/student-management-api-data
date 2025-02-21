@@ -1,61 +1,78 @@
 package com.example.demo.controllers;
 
-
 import java.util.List;
 import java.util.Optional;
- 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
- 
+import org.springframework.web.bind.annotation.*;
+
 import com.example.demo.entities.Student;
-import com.example.demo.repos.StudentDao;
 import com.example.demo.service.StudentService;
- 
+
 @RestController
+@RequestMapping("/students")
 public class StudentController {
- 
+
 	@Autowired
 	StudentService service;
-	
-	
-	@GetMapping("/Students")
-	public Iterable<Student> getStudents(){
+
+	@GetMapping
+	public Iterable<Student> getStudents() {
 		return service.getStudents();
 	}
-	
-	 @GetMapping("/Students/{rollNo}")
-	 public Optional<Student> getStudentById(@PathVariable int rollNo){
+
+	@GetMapping("/{rollNo}")
+	public Optional<Student> getStudentById(@PathVariable int rollNo) {
 		return service.getStudentById(rollNo);
-		
-	 }
-	
-	 @PostMapping("/Students")
-	 public String insertStudents(@RequestBody Student s){
-		 service.insertStudents(s);
-		 return "Added new Student Successfully !";
-	 }
-	
-	 @RequestMapping(path = "/update/{rollNo}",method = {RequestMethod.PUT,RequestMethod.PATCH})
-	 public String updateStudent(@RequestBody Student s, @PathVariable int rollNo ) {
-		 service.updateStudent(s, rollNo);
-		 return "Updated record successfully";
-	 }
-	
-	 @DeleteMapping("/Students/{id}")
-	 public String deleteStudent(@PathVariable int id ) {
-		 service.deleteStudent(id);
-		 return "Successfully deleted Student record !";
-	 }
-	 
-	
-	
-	
+	}
+
+	@PostMapping
+	public String insertStudents(@RequestBody Student s) {
+		return service.insertStudents(s);
+	}
+
+	@PutMapping("/update/{rollNo}")
+	public String updateStudent(@RequestBody Student s, @PathVariable int rollNo) {
+		return service.updateStudent(s, rollNo);
+	}
+
+	@DeleteMapping("/{rollNo}")
+	public String deleteStudent(@PathVariable int rollNo) {
+		return service.deleteStudent(rollNo);
+	}
+
+	// Get all students from a specific school
+	@GetMapping("/school")
+	public List<Student> getStudentsBySchool(@RequestParam String name) {
+		return service.getStudentsBySchool(name);
+	}
+
+	// Get all students who passed or failed
+	@GetMapping("/result")
+	public List<Student> getStudentsByResult(@RequestParam boolean pass) {
+		return service.getStudentsByResult(pass);
+	}
+
+	// Get count of students in a specific standard
+	@GetMapping("/{standard}/count")
+	public long getStudentCountByStandard(@PathVariable int standard) {
+		return service.getStudentCountByStandard(standard);
+	}
+
+	// Get total strength of a school
+	@GetMapping("/strength")
+	public long getTotalStrengthBySchool(@RequestParam String school) {
+		return service.getTotalStrengthBySchool(school);
+	}
+
+	// Get top 5 students by percentage
+	@GetMapping("/toppers")
+	public List<Student> getTopFiveStudents() {
+		return service.getTopFiveStudents();
+	}
+
+	// Get topper of a specific standard
+	@GetMapping("/topper/{standard}")
+	public Optional<Student> getTopperByStandard(@PathVariable int standard) {
+		return service.getTopperByStandard(standard);
+	}
 }
