@@ -2,19 +2,19 @@ package com.example.demo.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.example.demo.entities.Student;
 import com.example.demo.repos.StudentDao;
 
 @Service
 public class StudentService {
-	@Autowired
-	StudentDao dao;
-
-	public Iterable<Student> getStudents() {
+    @Autowired
+    private StudentDao dao;
+    
+    public Iterable<Student> getStudents() {
 		return dao.findAll();
 	}
 
@@ -46,44 +46,28 @@ public class StudentService {
 		return "Successfully deleted Student record!";
 	}
 
-	// Get students by school name
-	public List<Student> getStudentsBySchool(String schoolName) {
-		return ((List<Student>) dao.findAll()).stream()
-				.filter(student -> student.getSchool().equalsIgnoreCase(schoolName))
-				.collect(Collectors.toList());
-	}
 
-	// Get students based on pass/fail criteria
-	public List<Student> getStudentsByResult(boolean pass) {
-		return ((List<Student>) dao.findAll()).stream()
-				.filter(student -> (pass ? student.getPercentage() >= 40 : student.getPercentage() < 40))
-				.collect(Collectors.toList());
-	}
+    public List<Student> getStudentsBySchool(String schoolName) {
+        return dao.findBySchool(schoolName);
+    }
 
-	// Get count of students in a specific standard
-	public long getStudentCountByStandard(int standard) {
-		return ((List<Student>) dao.findAll()).stream()
-				.filter(student -> student.getStandard() == standard)
-				.count();
-	}
+    public List<Student> getStudentsByResult(boolean pass) {
+        return pass ? dao.findPassingStudents() : dao.findFailingStudents();
+    }
 
-	// Get total strength of a school
-	public long getTotalStrengthBySchool(String schoolName) {
-		return getStudentsBySchool(schoolName).size();
-	}
+    public long getStudentCountByStandard(int standard) {
+        return dao.countByStandard(standard);
+    }
 
-	// Get top 5 students by percentage
-	public List<Student> getTopFiveStudents() {
-		return ((List<Student>) dao.findAll()).stream()
-				.sorted((s1, s2) -> Float.compare(s2.getPercentage(), s1.getPercentage()))
-				.limit(5)
-				.collect(Collectors.toList());
-	}
+    public long getTotalStrengthBySchool(String schoolName) {
+        return dao.countBySchool(schoolName);
+    }
 
-	// Get topper of a specific standard
-	public Optional<Student> getTopperByStandard(int standard) {
-		return ((List<Student>) dao.findAll()).stream()
-				.filter(student -> student.getStandard() == standard)
-				.max((s1, s2) -> Float.compare(s1.getPercentage(), s2.getPercentage()));
-	}
+    public List<Student> getTopFiveStudents() {
+        return dao.findTopFiveStudents();
+    }
+
+    public Optional<Student> getTopperByStandard(int standard) {
+        return dao.findTopperByStandard(standard);
+    }
 }
